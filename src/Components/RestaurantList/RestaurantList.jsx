@@ -5,8 +5,7 @@ import { addInitialForm } from "../../constants"
 
 const RestaurantList = () => {
 
-    const { setDetailedView, setFormData } = useGlobalState()
-    const [restaurantList, setRestaurantList] = useState([])
+    const { setDetailedView, setFormData, setRestaurantList, restaurantList } = useGlobalState()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -26,14 +25,14 @@ const RestaurantList = () => {
                 {
                     restaurantList && restaurantList.map(item => {
                         return (
-                            <div key={item.id} className='group overflow-hidden relative shadow shadow-gray-400 hover:shadow-gray-800 duration-200 transition-all ease-linear rounded-xl cursor-pointer p-2 w-auto'>
+                            <div key={item.id} className='group w-[250px] overflow-hidden relative shadow shadow-gray-400 hover:shadow-gray-800 duration-200 transition-all ease-linear rounded-xl cursor-pointer p-2 '>
                                 <div className=' overflow-hidden rounded-xl'>
                                     <img src={item.RESTAURANT_IMAGE} onClick={()=>setDetailedView(item.RESTAURANT_NAME)} className='w-[250px] duration-200 transition-all ease-linear group-hover:scale-[1.1] rounded-xl h-[150px]'/>
                                 </div>
                                 <div className=' text-center font-medium'>
-                                    <h2><i className='fa fa-hotel'></i> {item.RESTAURANT_NAME}</h2>
-                                    <p><i className='fa fa-phone'></i> {item.RESTAURANT_NUMBER}</p>
-                                    <p><i className='fa fa-location-dot'></i> {item.RESTAURANT_ADDRESS}</p>
+                                    <h2 className=" mt-3"><i className='fa fa-hotel whitespace-pre-wrap'></i> {item.RESTAURANT_NAME}</h2>
+                                    <p className="mt-2"><i className='fa fa-phone'></i> {item.RESTAURANT_NUMBER}</p>
+                                    <p className="mt-2"><i className='fa fa-location-dot whitespace-pre-wrap'></i> {item.RESTAURANT_ADDRESS}</p>
                                 </div>
                                 <div onClick={() => {
                                     const { createdAt, updatedAt, ...rest } = item;

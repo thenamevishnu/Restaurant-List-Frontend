@@ -23,15 +23,16 @@ export const addRestaurant = async (obj) => {
     try {
         for (let key in obj) {
             if (obj[key] == "") {
-                console.log(key);
                 return key.replace(key[0], key[0].toUpperCase()) + " is empty!"
             }
+            if (key == "RESTAURANT_NUMBER" && isNaN(obj[key])) {
+                return "RESTAURANT_NUMBER Should be numeric"
+            }
         }
-        console.log("hey");
         const url = await upload(obj.RESTAURANT_IMAGE)
         obj.RESTAURANT_IMAGE = url
         const response = await api.post("/add-restaurant", obj)
-        return {status: "OK", message: response.data.message}
+        return {status: "OK", message: response.data?.message, newRecord: response.data?.newRecord}
     } catch (err) {
         toast.error(err)
         return
@@ -44,13 +45,16 @@ export const updateRestaurant = async (obj) => {
             if (obj[key] == "") {
                 return key.replace(key[0], key[0].toUpperCase()) + " is empty!"
             }
+            if (key == "RESTAURANT_NUMBER" && isNaN(obj[key])) {
+                return "RESTAURANT_NUMBER Should be numeric"
+            }
         }
         if (obj.RESTAURANT_IMAGE?.name) {
             const url = await upload(obj.RESTAURANT_IMAGE)
             obj.RESTAURANT_IMAGE = url
         }
         const response = await api.patch("/update-restaurant", obj)
-        return {message: response.data?.message}
+        return {message: response.data?.message, newList: response.data?.newList}
     } catch (err) {
         toast.error(err)
         return
@@ -60,7 +64,6 @@ export const updateRestaurant = async (obj) => {
 export const getRestaurant = async () => {
     try {
         const response = await api.get("/get-restaurant")
-        console.log(response.data);
         return response.data.result
     } catch (err) {
         toast.error(err)
@@ -70,8 +73,7 @@ export const getRestaurant = async () => {
 
 export const deleteRestaurant = async (id) => {
     try {
-        const response = await api.delete(`/delete-restaurant/${id}`)
-        console.log(response);
+        await api.delete(`/delete-restaurant/${id}`)
     } catch (err) {
         console.log(err);
         toast.error(err)

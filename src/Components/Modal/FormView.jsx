@@ -5,7 +5,7 @@ import { addRestaurant, updateRestaurant } from "../../Services/ListManage"
 
 const FormView = () => {
 
-    const {formData, setFormData} = useGlobalState()
+    const {formData, setFormData, setRestaurantList} = useGlobalState()
 
     const submitForm = async (event) => {
         event.preventDefault()
@@ -14,16 +14,19 @@ const FormView = () => {
                 const { TYPE, ...rest } = formData
                 const response = await addRestaurant(rest)
                 if (response?.status == "OK") {
+                    setFormData(null)
+                    setRestaurantList((prev) => [...prev, response.newRecord])
                     toast.success(response.message)
                 } else {
                     toast.error(response)
                     return
                 }
             } else {
-                console.log(formData);
                 const response = await updateRestaurant(formData)
                 if (response?.message == "Updated") {
                     toast.success(response.message)
+                    setFormData(null)
+                    setRestaurantList(response.newList)
                 } else {
                     toast.error(response)
                     return
