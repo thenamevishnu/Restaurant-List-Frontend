@@ -3,6 +3,7 @@ import Header from '../Header/Header'
 import RestaurantList from '../RestaurantList/RestaurantList'
 import DetailedView from '../Modal/DetailedView'
 import FormView from '../Modal/FormView'
+import Alert from '../Modal/Alert'
 
 const Home = () => {
 
@@ -11,7 +12,8 @@ const Home = () => {
             <Header />
             <RestaurantList />
             <DetailedView />
-            <FormView/>
+            <FormView />
+            <Alert/>
         </Fragment>
     )
 }

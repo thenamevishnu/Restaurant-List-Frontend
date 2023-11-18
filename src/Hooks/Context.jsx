@@ -6,9 +6,10 @@ export const MyProvider = ({ children }) => {
     const [detailedView, setDetailedView] = useState(null)
     const [formData, setFormData] = useState(null)
     const [restaurantList, setRestaurantList] = useState([])
+    const [deleteRecord, setDeleteRecord] = useState(null)
 
     return (
-        <MyContext.Provider value={{ detailedView, setDetailedView, formData, setFormData, setRestaurantList, restaurantList }}>
+        <MyContext.Provider value={{ detailedView, deleteRecord, setDeleteRecord, setDetailedView, formData, setFormData, setRestaurantList, restaurantList }}>
             {children}
         </MyContext.Provider>
     )
