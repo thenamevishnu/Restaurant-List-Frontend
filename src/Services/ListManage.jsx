@@ -10,8 +10,10 @@ const upload = async (file) => {
         form.append('api_secret', import.meta.env.VITE_CLOUD_SECRET)
         form.append('cloud_name', import.meta.env.VITE_CLOUD)
         form.append('upload_preset', import.meta.env.VITE_CLOUD_PRESETS)
+        console.log(form);
         const { data } = await axios.post(import.meta.env.VITE_CLOUD_URL, form)
-        return data.url
+        console.log(data);
+        return data.secure_url
     } catch (err) {
         console.log(err);
         toast.error(err)
