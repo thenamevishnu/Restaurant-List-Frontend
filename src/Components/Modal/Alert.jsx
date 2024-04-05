@@ -1,6 +1,7 @@
 import React from 'react'
 import { useGlobalState } from '../../Hooks/Context'
 import { deleteRestaurant } from '../../Services/ListManage'
+import toast from 'react-hot-toast'
 
 const Alert = () => {
 
@@ -13,9 +14,13 @@ const Alert = () => {
             <p>Are you sure to delete { deleteRecord?.RESTAURANT_NAME }</p>
             <div className='mt-5 flex gap-2 justify-center text-white'>
                 <button className='bg-green-700 p-1 px-2 rounded-xl' onClick={async () => {
-                    await deleteRestaurant(deleteRecord?.id)
+                    const response = await deleteRestaurant(deleteRecord?.id)
                     setDeleteRecord(null)
-                    setRestaurantList(restaurantList?.filter(items=>items.id!==deleteRecord?.id))
+                    if (response) {
+                        setRestaurantList(restaurantList?.filter(items=>items.id!==deleteRecord?.id))
+                    } else {
+                        return toast.error("Delete failed!")
+                    }
                 }}>Confirm</button>
                 <button className='bg-red-500 p-1 px-2 rounded-xl' onClick={()=>setDeleteRecord(null)}>Cancel</button>
             </div>

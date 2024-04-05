@@ -1,5 +1,4 @@
 import axios from "axios"
-import toast from "react-hot-toast"
 import { api } from "../axios"
 
 const upload = async (file) => {
@@ -10,14 +9,13 @@ const upload = async (file) => {
         form.append('api_secret', import.meta.env.VITE_CLOUD_SECRET)
         form.append('cloud_name', import.meta.env.VITE_CLOUD)
         form.append('upload_preset', import.meta.env.VITE_CLOUD_PRESETS)
-        console.log(form);
         const { data } = await axios.post(import.meta.env.VITE_CLOUD_URL, form)
-        console.log(data);
-        return data.secure_url
+        if (data?.secure_url) {
+            return data
+        }
+        return { message: "Something error happend!" }
     } catch (err) {
-        console.log(err);
-        toast.error(err)
-        return
+        return { message: err?.response?.data?.message || err?.message }
     }
 }
 
@@ -25,19 +23,23 @@ export const addRestaurant = async (obj) => {
     try {
         for (let key in obj) {
             if (obj[key] == "") {
-                return key.replace(key[0], key[0].toUpperCase()) + " is empty!"
+                return { message: key.replace(key[0], key[0].toUpperCase()) + " is empty!" }
             }
             if (key == "RESTAURANT_NUMBER" && isNaN(obj[key])) {
-                return "RESTAURANT_NUMBER Should be numeric"
+                return { message: "RESTAURANT_NUMBER Should be numeric" }
             }
         }
-        const url = await upload(obj.RESTAURANT_IMAGE)
-        obj.RESTAURANT_IMAGE = url
-        const response = await api.post("/add-restaurant", obj)
-        return {status: "OK", message: response.data?.message, newRecord: response.data?.newRecord}
+        const { secure_url } = await upload(obj.RESTAURANT_IMAGE)
+        if (secure_url) {
+            obj.RESTAURANT_IMAGE = secure_url
+            const { data } = await api.post("/add-restaurant", obj)
+            if (data.status === "OK") {
+                return data
+            }
+        }
+        return { message: "Something error happend!" }
     } catch (err) {
-        toast.error(err)
-        return
+        return { message: err?.response?.data?.message || err?.message }
     }
 }
 
@@ -45,40 +47,50 @@ export const updateRestaurant = async (obj) => {
     try {
         for (let key in obj) {
             if (obj[key] == "") {
-                return key.replace(key[0], key[0].toUpperCase()) + " is empty!"
+                return { message: key.replace(key[0], key[0].toUpperCase()) + " is empty!" }
             }
             if (key == "RESTAURANT_NUMBER" && isNaN(obj[key])) {
-                return "RESTAURANT_NUMBER Should be numeric"
+                return { message: "RESTAURANT_NUMBER Should be numeric" }
             }
         }
         if (obj.RESTAURANT_IMAGE?.name) {
-            const url = await upload(obj.RESTAURANT_IMAGE)
-            obj.RESTAURANT_IMAGE = url
+            const { secure_url } = await upload(obj.RESTAURANT_IMAGE)
+            if (secure_url) {
+                obj.RESTAURANT_IMAGE = secure_url
+            } else {
+                return { message: "Upload failed!" }
+            }
         }
-        const response = await api.patch("/update-restaurant", obj)
-        return {message: response.data?.message, newList: response.data?.newList}
+        const { data } = await api.patch("/update-restaurant", obj)
+        if (data.status === "OK") {
+            return data
+        }
+        return { message: "Something error happend!" }
     } catch (err) {
-        toast.error(err)
-        return
+        return { message: err?.response?.data?.message || err?.message }
     }
 }
 
 export const getRestaurant = async () => {
     try {
-        const response = await api.get("/get-restaurant")
-        return response.data.result
+        const { data } = await api.get("/get-restaurant")
+        if (data.result) {
+            return data
+        }
+        return { message: "Something error happend!" }
     } catch (err) {
-        toast.error(err)
-        return
+        return { message: err?.response?.data?.message || err?.message }
     }
 }
 
 export const deleteRestaurant = async (id) => {
     try {
-        await api.delete(`/delete-restaurant/${id}`)
+        const { data } = await api.delete(`/delete-restaurant/${id}`)
+        if (data?.message === "Deleted") {
+            return true
+        }
+        return false
     } catch (err) {
-        console.log(err);
-        toast.error(err)
-        return
+        return { message: err?.response?.data?.message || err?.message }
     }
 }
